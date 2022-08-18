@@ -304,6 +304,8 @@ function filterSymbols(textRanges: vscode.Range[], startSymbolLength: number, co
 *	textRanges: Ranges to highlight
 ******************************************************************************************************************************************/
 function handleHighlightRanges(activeEditor: vscode.TextEditor, textRanges: Array<vscode.Range>[], startSymbol: Util.SymbolWithOffset, endSymbol: string) {
+	removePreviousDecorations();
+
 	let highlighter = new Highlighter();
 	let symbolHandler = new SymbolHandler();
 	let contentDecorationHandler = new DecorationHandler(DecorationType.CONTENT);
@@ -336,12 +338,17 @@ function handleHighlightRanges(activeEditor: vscode.TextEditor, textRanges: Arra
 	symbolRanges.push(startSymbolRange);
 	symbolRanges.push(endSymbolRange);
 
+	let addAnimation = false;
+
 	for (let symbolRange of symbolRanges) {
-		decorationTypes = decorationTypes.concat(highlighter.highlightRanges(activeEditor, symbolDecorationHandler, symbolRange));
+		decorationTypes = decorationTypes.concat(highlighter.highlightRanges(activeEditor, symbolDecorationHandler, symbolRange, addAnimation));
+		if (!addAnimation) {
+			addAnimation = true;
+		}
 	}
 
 	for (let contentRange of contentRanges) {
-		decorationTypes = decorationTypes.concat(highlighter.highlightRanges(activeEditor, contentDecorationHandler, contentRange));
+		decorationTypes = decorationTypes.concat(highlighter.highlightRanges(activeEditor, contentDecorationHandler, contentRange, false));
 	}
 
 	bracketHighlightGlobals.decorationTypes = decorationTypes;

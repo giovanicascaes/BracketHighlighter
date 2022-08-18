@@ -11,7 +11,7 @@
 	"description": "Decorates text inbetween symbols.",
 	"version": "2.3.1",
 	"engines": {
-		"vscode": "^1.40.0"
+		"vscode": "^1.70.0"
 	},
 	"categories": [
 		"Other"
@@ -314,10 +314,11 @@
 		"@types/glob": "^7.1.1",
 		"@types/mocha": "^5.2.6",
 		"@types/node": "^10.12.21",
-		"@types/vscode": "^1.40.0",
+		"@types/vscode": "^1.70.0",
 		"glob": "^7.1.4",
 		"tslint": "^5.12.1",
-		"typescript": "^3.9.9",
+		"typescript": "^4.7.4",
+		"vsce": "^2.10.0",
 		"vscode-test": "^1.0.2"
 	},
 	"dependencies": {

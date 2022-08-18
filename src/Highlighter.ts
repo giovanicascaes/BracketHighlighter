@@ -10,10 +10,10 @@ export default class Highlighter {
         editor.setDecorations(decorationType, decorationOptions);
     }
 
-    public highlightRanges(editor: TextEditor, decorationHandler: DecorationHandler, ranges: Array<Range>): Array<TextEditorDecorationType> {
+    public highlightRanges(editor: TextEditor, decorationHandler: DecorationHandler, ranges: Array<Range>, addAnimation?: boolean): Array<TextEditorDecorationType> {
         let decorationTypes = [];
         for (let range of ranges) {
-            let decorationType = decorationHandler.getDecorationType();
+            let decorationType = decorationHandler.getDecorationType(addAnimation);
             decorationTypes.push(decorationType);
             this.highlightRange(editor, decorationType, range);
         }
