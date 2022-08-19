@@ -96,15 +96,17 @@ function handleTextSelectionEvent() {
 	let startSymbol: Util.SymbolWithOffset = { symbol: "", relativeOffset: 0, absoluteOffset: 0 };
 	let symbolHandler = new SymbolHandler();
 	for (let selection of activeEditor.selections) {
-		let symbolType: Util.SymbolType = bracketHighlightGlobals.reverseSearchEnabled ? Util.SymbolType.ALLSYMBOLS : Util.SymbolType.STARTSYMBOL;
-		startSymbol = Util.getSymbolFromPosition(activeEditor, selection.active, symbolType);
-		let scopeRanges = getScopeRanges(activeEditor, selection, startSymbol);
-		if (scopeRanges.highlightRanges.length === 0) {
-			return;
+		if (selection.active.line === selection.anchor.line && selection.active.character === selection.anchor.character) {
+			let symbolType: Util.SymbolType = bracketHighlightGlobals.reverseSearchEnabled ? Util.SymbolType.ALLSYMBOLS : Util.SymbolType.STARTSYMBOL;
+			startSymbol = Util.getSymbolFromPosition(activeEditor, selection.active, symbolType);
+			let scopeRanges = getScopeRanges(activeEditor, selection, startSymbol);
+			if (scopeRanges.highlightRanges.length === 0) {
+				return;
+			}
+			rangesForHighlight.push(scopeRanges.highlightRanges);
+			rangesForBlur.push(scopeRanges.blurRanges);
+			bracketHighlightGlobals.highlightSymbols.push(startSymbol.symbol);
 		}
-		rangesForHighlight.push(scopeRanges.highlightRanges);
-		rangesForBlur.push(scopeRanges.blurRanges);
-		bracketHighlightGlobals.highlightSymbols.push(startSymbol.symbol);
 	}
 	let endSymbols = symbolHandler.getCounterParts(startSymbol.symbol);
 	let endSymbol = "";
