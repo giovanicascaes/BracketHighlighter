@@ -341,7 +341,7 @@ function handleHighlightRanges(activeEditor: vscode.TextEditor, textRanges: Arra
 	symbolRanges.push(endSymbolRange);
 
 	if (symbolRanges.length || contentRanges.length) {
-		bracketHighlightGlobals.disableDecorateTimer = setTimeout(function () {
+		bracketHighlightGlobals.disableDecorationDelayTimer = setTimeout(function () {
 			let addAnimation = false;
 	
 			for (let symbolRange of symbolRanges) {
@@ -356,7 +356,7 @@ function handleHighlightRanges(activeEditor: vscode.TextEditor, textRanges: Arra
 			}
 	
 			finishDecoration(decorationTypes, textRanges);
-		}, bracketHighlightGlobals.timeOutToDecorate);
+		}, bracketHighlightGlobals.decorationDelay);
 	} else {
 		finishDecoration(decorationTypes, textRanges);
 	}
@@ -367,13 +367,16 @@ function finishDecoration(decorationTypes: vscode.TextEditorDecorationType[], te
 	bracketHighlightGlobals.decorationTypes = decorationTypes;
 	bracketHighlightGlobals.decorationStatus = true;
 	bracketHighlightGlobals.highlightRanges = textRanges;
+
+	if (bracketHighlightGlobals.decorationTimeout > 0) {
+		bracketHighlightGlobals.disableDecorationTimeoutTimer = setTimeout(removePreviousDecorations, bracketHighlightGlobals.decorationTimeout);
+	}
 }
 
 /******************************************************************************************************************************************
 * Removes all previous decorations
 ******************************************************************************************************************************************/
 function removePreviousDecorations() { /* TODO: extend this for multiple editors */
-	clearDecorationTimer();
 	if (bracketHighlightGlobals.decorationStatus === true) {
 		let highlighter = new Highlighter();
 		highlighter.removeHighlights(bracketHighlightGlobals.decorationTypes);
@@ -381,6 +384,8 @@ function removePreviousDecorations() { /* TODO: extend this for multiple editors
 		bracketHighlightGlobals.highlightSymbols = [];
 		bracketHighlightGlobals.highlightRanges = [];
 	}
+	clearDecorationDelayTimer();
+	clearDecorationTimeoutTimer();
 }
 
 /******************************************************************************************************************************************
@@ -529,11 +534,19 @@ function clearTimer() {
 }
 
 /******************************************************************************************************************************************
-* Clears the timeout of the global decoration timer handle and resets the timer.
+* Clears the timeout of the global decoration delay timer handle and resets the timer.
 ******************************************************************************************************************************************/
-function clearDecorationTimer() {
-	clearTimeout(bracketHighlightGlobals.disableDecorateTimer);
-	bracketHighlightGlobals.disableDecorateTimer = null;
+function clearDecorationDelayTimer() {
+	clearTimeout(bracketHighlightGlobals.disableDecorationDelayTimer);
+	bracketHighlightGlobals.disableDecorationDelayTimer = null;
+}
+
+/******************************************************************************************************************************************
+* Clears the timeout of the global decoration timeout timer handle and resets the timer.
+******************************************************************************************************************************************/
+function clearDecorationTimeoutTimer() {
+	clearTimeout(bracketHighlightGlobals.disableDecorationTimeoutTimer);
+	bracketHighlightGlobals.disableDecorationTimeoutTimer = null;
 }
 
 /******************************************************************************************************************************************

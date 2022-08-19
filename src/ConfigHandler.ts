@@ -212,13 +212,13 @@ export default class ConfigHandler {
         return timeOutValue;
     }
 
-    public getTimeOutToDecorate(): number {
+    public getDecorationDelay(): number {
         let config = this.getConfiguration();
-        let timeOutToDecorate: number | undefined = config.get("timeOutToDecorate");
-        if (timeOutToDecorate === undefined) {
-            timeOutToDecorate = 400;
+        let decorationDelay: number | undefined = config.get("decorationDelay");
+        if (decorationDelay === undefined) {
+            decorationDelay = 0;
         }
-        return timeOutToDecorate;
+        return decorationDelay;
     }
 
     public ignoreContent(): boolean {
@@ -246,6 +246,15 @@ export default class ConfigHandler {
             regexMode = false;
         }
         return regexMode;
+    }
+
+       public getDecorationTimeout(): number {
+        let config = this.getConfiguration();
+        let decorationTimeout: number | undefined = config.get("decorationTimeout");
+        if (decorationTimeout === undefined) {
+            decorationTimeout = 0;
+        }
+        return decorationTimeout;
     }
 }
 
