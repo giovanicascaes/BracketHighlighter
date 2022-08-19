@@ -27,21 +27,27 @@ function getClosestSymbolFromPosition(symbols: Array<SymbolWithOffset>, cursorPo
         return { symbol: "", relativeOffset: 0, absoluteOffset: 0 };
     }
     else if (symbols.length === 1) {
+        if (symbols[0].relativeOffset === 0) {
+            return { symbol: "", relativeOffset: 0, absoluteOffset: 0 };
+        }
         return symbols[0];
     }
     let closestSymbol = symbols.reduce((symbol1, symbol2) => {
-        if (symbol1.absoluteOffset <= cursorPosition && symbol1.absoluteOffset + symbol1.symbol.length > cursorPosition) {
+        if (symbol1.absoluteOffset < cursorPosition && symbol1.absoluteOffset + symbol1.symbol.length >= cursorPosition) {
             return symbol1;
         }
-        else if (symbol2.absoluteOffset <= cursorPosition && symbol2.absoluteOffset + symbol2.symbol.length > cursorPosition) {
+        else if (symbol2.absoluteOffset < cursorPosition && symbol2.absoluteOffset + symbol2.symbol.length >= cursorPosition) {
             return symbol2;
         }
         else {
             let res1 = Math.abs(symbol1.absoluteOffset - cursorPosition);
             let res2 = Math.abs(symbol2.absoluteOffset - cursorPosition);
-            return res1 <= res2 ? symbol1 : symbol2;
+            return res1 < res2 ? symbol1 : symbol2;
         }
     });
+    if (closestSymbol.relativeOffset === 0) {
+        return { symbol: "", relativeOffset: 0, absoluteOffset: 0 };
+    }
     return closestSymbol;
 }
 
