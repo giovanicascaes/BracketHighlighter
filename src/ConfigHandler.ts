@@ -212,6 +212,15 @@ export default class ConfigHandler {
         return timeOutValue;
     }
 
+    public getTimeOutToDecorate(): number {
+        let config = this.getConfiguration();
+        let timeOutToDecorate: number | undefined = config.get("timeOutToDecorate");
+        if (timeOutToDecorate === undefined) {
+            timeOutToDecorate = 400;
+        }
+        return timeOutToDecorate;
+    }
+
     public ignoreContent(): boolean {
         let config = this.getConfiguration();
         let ignoreContent: boolean | undefined = config.get("ignoreContent");

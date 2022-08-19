@@ -17,6 +17,7 @@ export default class GlobalsHandler {
     public searchDirection: SearchDirection;
     public handleTextSelectionEventActive: boolean;
     public disableTimer: any;
+    public disableDecorateTimer: any;
     public highlightRanges: Array<vscode.Range>[];
     public highlightSymbols: Array<string>;
 
@@ -36,6 +37,7 @@ export default class GlobalsHandler {
     public extensionEnabled!: boolean;
     public lastSelection!: vscode.Selection | undefined;
     public timeOutValue!: number;
+    public timeOutToDecorate!: number;
     public ignoreContent!: boolean;
     public regexMode!: boolean;
 
@@ -47,6 +49,7 @@ export default class GlobalsHandler {
         this.searchDirection = SearchDirection.FORWARDS;
         this.handleTextSelectionEventActive = true;
         this.disableTimer = <any>null;
+        this.disableDecorateTimer = <any>null;
         this.highlightRanges = [];
         this.highlightSymbols = [];
 
@@ -69,6 +72,7 @@ export default class GlobalsHandler {
         this.highlightScopeFromText = this.configHandler.highlightScopeFromText();
         this.extensionEnabled = this.configHandler.isExtensionEnabled();
         this.timeOutValue = this.configHandler.getTimeOutValue();
+        this.timeOutToDecorate = this.configHandler.getTimeOutToDecorate();
         this.ignoreContent = this.configHandler.ignoreContent();
         this.regexMode = this.configHandler.regexMode();
 

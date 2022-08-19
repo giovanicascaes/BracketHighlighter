@@ -338,19 +338,30 @@ function handleHighlightRanges(activeEditor: vscode.TextEditor, textRanges: Arra
 	symbolRanges.push(startSymbolRange);
 	symbolRanges.push(endSymbolRange);
 
-	let addAnimation = false;
-
-	for (let symbolRange of symbolRanges) {
-		decorationTypes = decorationTypes.concat(highlighter.highlightRanges(activeEditor, symbolDecorationHandler, symbolRange, addAnimation));
-		if (!addAnimation) {
-			addAnimation = true;
-		}
+	if (symbolRanges.length || contentRanges.length) {
+		bracketHighlightGlobals.disableDecorateTimer = setTimeout(function () {
+			let addAnimation = false;
+	
+			for (let symbolRange of symbolRanges) {
+				decorationTypes = decorationTypes.concat(highlighter.highlightRanges(activeEditor, symbolDecorationHandler, symbolRange, addAnimation));
+				if (!addAnimation) {
+					addAnimation = true;
+				}
+			}
+	
+			for (let contentRange of contentRanges) {
+				decorationTypes = decorationTypes.concat(highlighter.highlightRanges(activeEditor, contentDecorationHandler, contentRange, false));
+			}
+	
+			finishDecoration(decorationTypes, textRanges);
+		}, bracketHighlightGlobals.timeOutToDecorate);
+	} else {
+		finishDecoration(decorationTypes, textRanges);
 	}
 
-	for (let contentRange of contentRanges) {
-		decorationTypes = decorationTypes.concat(highlighter.highlightRanges(activeEditor, contentDecorationHandler, contentRange, false));
-	}
+}
 
+function finishDecoration(decorationTypes: vscode.TextEditorDecorationType[], textRanges: vscode.Range[][]) {
 	bracketHighlightGlobals.decorationTypes = decorationTypes;
 	bracketHighlightGlobals.decorationStatus = true;
 	bracketHighlightGlobals.highlightRanges = textRanges;
@@ -360,6 +371,7 @@ function handleHighlightRanges(activeEditor: vscode.TextEditor, textRanges: Arra
 * Removes all previous decorations
 ******************************************************************************************************************************************/
 function removePreviousDecorations() { /* TODO: extend this for multiple editors */
+	clearDecorationTimer();
 	if (bracketHighlightGlobals.decorationStatus === true) {
 		let highlighter = new Highlighter();
 		highlighter.removeHighlights(bracketHighlightGlobals.decorationTypes);
@@ -515,6 +527,14 @@ function clearTimer() {
 }
 
 /******************************************************************************************************************************************
+* Clears the timeout of the global decoration timer handle and resets the timer.
+******************************************************************************************************************************************/
+function clearDecorationTimer() {
+	clearTimeout(bracketHighlightGlobals.disableDecorateTimer);
+	bracketHighlightGlobals.disableDecorateTimer = null;
+}
+
+/******************************************************************************************************************************************
 * Business logic, which shall be executed once the timeout with the configured time span occurs.
 ******************************************************************************************************************************************/
 function timeoutFunction() {
@@ -529,10 +549,11 @@ function timeoutFunction() {
 *	currentSelection: Selection used to determine if highlighting is necessary
 ******************************************************************************************************************************************/
 function onSelectionChangeEvent(currentSelection: vscode.Selection) {
+	if (bracketHighlightGlobals.disableTimer !== null) {
+		clearTimer();
+	}
+
 	if (isSelectionInPreviousRange(currentSelection)) {
-		if (bracketHighlightGlobals.disableTimer !== null) {
-			clearTimer();
-		}
 		setTextSelectionEventHandling(false);
 		bracketHighlightGlobals.disableTimer = setTimeout(
 			timeoutFunction,
@@ -540,9 +561,6 @@ function onSelectionChangeEvent(currentSelection: vscode.Selection) {
 		);
 	}
 	else {
-		if (bracketHighlightGlobals.disableTimer !== null) {
-			clearTimer();
-		}
 		setTextSelectionEventHandling(true);
 	}
 }

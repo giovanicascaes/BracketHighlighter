@@ -216,6 +216,12 @@
 						"description": "Sets a value in milliseconds how often highlighting can be triggered. A higher value will increase performance when writing, however highlighting may be delayed in some cases. Setting this to 0 will make the extension behave as it did before this option existed.",
 						"scope": "resource"
 					},
+					"BracketHighlighter.timeOutToDecorate": {
+						"type": "number",
+						"default": 400,
+						"description": "Sets a value in milliseconds when decoration should be applied.",
+						"scope": "resource"
+					},
 					"BracketHighlighter.ignoreContent": {
 						"type": "boolean",
 						"default": true,
